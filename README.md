@@ -1,121 +1,135 @@
 # cub3D
 
-## Usage
+3Dレイキャスティングゲームエンジンの実装プロジェクト
+
+## 概要
+
+cub3Dは、古典的なレイキャスティング技術を使用して3D視点の迷路ゲームを作成するプロジェクトです。Wolfenstein 3Dスタイルの第一人称視点でマップを探索できます。
+
+## 機能
+
+- **3Dレイキャスティング**: リアルタイムで壁の描画を行う
+- **テクスチャマッピング**: 各方角（北、南、東、西）に異なるテクスチャを適用
+- **プレイヤー移動**: WASD キーによる移動と矢印キーによる視点回転
+- **色彩設定**: 天井と床の色をRGB値で指定可能
+- **マップ検証**: 入力されたマップファイルの妥当性チェック
+
+## システム要件
+
+- macOS または Linux
+- MinilibX ライブラリ
+- C コンパイラ（gcc 推奨）
+- Make
+
+## インストール・ビルド
+
 ```bash
+# リポジトリをクローン
+git clone [repository-url]
+cd 42_cub3d
+
+# プロジェクトをビルド
 make
-./cub3D map.cub
+
+# 実行
+./cub3D maps/simple.cub
 ```
-## arguments
-*.cub  <a map cosists of the following elements>
 
-## OK functions
-- open
-- close
-- read
-- write
-- printf
-- malloc
-- free
-- perror
-- strerror
-- exit
-- gettimeofday
-- All functions of the math library (-lm man man 3 math)
-- All functions of the MinilibX
-- Libft functions
+## 使用方法
 
-# TODO
-- 描画関連
-	- 壁は、向いてる方角に従って違うテクスチャ
-		- XPMファイル？
-	- 天井と床の色は、互いに違う二色
-		- RGBで指定される
-- window関連
-	- [x] <- -> で視点移動
-		- 現状は90度回転
-		- 余裕があれば回転角度を小さくしたら面白い？
-	- [x] W, A, S, D で移動
-	- [ ] ESC でwindowを閉じて、プログラム終了(cleanly)
-		- cleanかどうかのチェック必須
-	- [ ] x でwindowを閉じて、プログラム終了(cleanly)
-		- cleanかどうかのチェック必須
-- nonマップ関連
-	- [ ] 重複する情報がある場合はエラー
-	- [ ] 必要な情報が足りない場合はエラー
-	- [ ] 無駄な情報がある場合はエラー
-- マップ関連
-	- [ ] マップが壁で囲まれてるチェック
-	- [x] 地図以外は、空行で区切れる　＝＞　空行を適切に無視する
-	- [x] 地図は常に最後
-	- [x] 地図以外の情報の順番にきまりはない
-	- [x] 地図以外の情報は、スペースで区切れる
-		- ft_splitで区切る
-	- [x] 必要な情報が足りない
-	- [x] 無駄な情報がある
-	- [ ] 地図内のスペースは意味を持つ (地図全体の歪な形とか)
-	- [ ] 地図のエラーの時は "Error\n ********" の出力
-	- [ ] 一つだけのN, S, E, W がある
-	- [ ] mapがデカすぎる場合はエラー
-	- [ ] mapの名前が　[].cub　でない場合はエラー
-	- [ ] mapの情報が最後に来る　＝＝　mapの後に何かがある場合はエラー
-- 入力解釈一覧
-	- non_map_info
-		- 東西南北のテクスチャのPATH
-		- 天井と床の色
-		- map情報が来るまでは、空行を認めて無視する
-			- 空行の定義　＝＝　'\n'のみの行
-			- スペースは認めない
-		- 全ての情報はスペースで区切られる
-- 一旦無視してるTODO
-	- [ ] テクスチャ指定のファイルがvalidかどうかのチェック
-	- [ ] RGBの値がvalidかどうかのチェック
-	- [ ] マップの形がvalidかどうかのチェック
+### キー操作
 
+| キー | 機能 |
+|------|------|
+| `W` | 前進 |
+| `S` | 後退 |
+| `A` | 左移動 |
+| `D` | 右移動 |
+| `←` | 左回転 |
+| `→` | 右回転 |
+| `ESC` | ゲーム終了 |
 
-# ===== devlogs =====
-### 2024/06/20 kisobe
-- To compile, change "# include "../mlx-mms/mlx.h" in include/cub3d.h to # include "../mlx-linux/mlx.h"" and remove libmlx.dylib.
-### 2024/06/21 kisobe
-- Implemented event hook(W, A, S, D, ->, <-)
-- floor and ceiling color
-- wall collisions
-- added event.c and move.c
+### マップファイル形式
 
-### 2024/06/25 kmiyazaw
-- 日本語で失礼します
-- ブランチを分けました。
-- 分けたブランチの先で、ft_err_printfをprintfに置き換えました。
+マップファイル（.cub）は以下の要素で構成されます：
 
-### 2024/06/29 kmiyazaw
-- kmiyazaw_inputChecker ブランチを作成しました。
-	- マップの入力チェックを行う関数を追加する予定です
-- kmiyazaw_def ブランチを整理し、pull requestを出しました。
+```
+NO ./texture/north_texture.xpm
+SO ./texture/south_texture.xpm
+WE ./texture/west_texture.xpm
+EA ./texture/east_texture.xpm
 
-### 2024/06/30 kmiyazaw
-- kmiyazaw_inputChecker ブランチで、入力.cubが正しかった場合の、情報抽出をする関数を追加しました。
-- これにより、non_map情報を含むinputしか(現状)読めなくなった。
-- non_map情報の過不足はエラーで弾けるようになった？　多分
-- また、non_map情報の順番は関係ないようになった。
-- non_mapの情報のsuffix?のチェックのみの追加なので、以下の項目は未着手です。
-	- non_mapの情報のテクスチャの指定がvalidかどうかのチェック
-	- non_mapの情報のRGBの値がvalidかどうかのチェック
-	- mapの形がvalidかどうかのチェック
-- mallocした変数＝後々freeする必要のある変数の命名規則の追加をしたいです。
-	- 例： char **input_
-		- 変数名の最後にアンダースコアをつける
+F 220,100,0
+C 225,30,0
 
-### 2024/07/07 kmiyazaw
-- mapのチェックを作る関数を作っています。
-	- 壁で囲まれてるかどうかのチェックの方針 多分完成？
-		1. map部分に対して、上下左右にpaddingした新たなmapを作る
-		2. その新たなmapは、widthを揃えている。＝＝　スペースなどのcharで埋める
-		3. padding-char この場合は、' ' の四方の隣が '1' or ' ' であることを確認する
-		4. valid check
-	- mapの文字の正しさチェック
-		- 順番に見ていって、'0' or '1' or '.' および、N, S, E, W があるかどうかを確認する
-		- それ以外ならエラー
-		- N, S, E, W が２つ以上ある場合はエラー
-- エラーの出力は、わかりやすさ優先でsubjectに乗っ取らないで書いてあるものばかりです。笑
-- 多分、mapのチェックは完成？と思われます。
-- [ ] なぜか、caps lockをhookしていて、caps lockを押すとexitします。
+111111
+100101
+101001
+1100N1
+111111
+```
 
+- `NO`, `SO`, `WE`, `EA`: 各方角のテクスチャファイルパス
+- `F`: 床の色（RGB）
+- `C`: 天井の色（RGB）
+- マップ: `1`（壁）、`0`（空間）、`N/S/E/W`（プレイヤーの初期位置と向き）
+
+## プロジェクト構造
+
+```mermaid
+graph TD
+    A[main.c] --> B[引数検証]
+    A --> C[マップ情報取得]
+    A --> D[プレイヤー初期化]
+    A --> E[MLX初期化]
+    A --> F[テクスチャ初期化]
+    A --> G[ゲームループ]
+    
+    B --> H[arg.c - ファイル検証]
+    C --> I[get_map.c - マップ解析]
+    D --> J[get_player.c - プレイヤー設定]
+    E --> K[init_mlx.c - グラフィック初期化]
+    F --> L[init_texture.c - テクスチャ読込]
+    G --> M[game.c - メインループ]
+    
+    M --> N[draw.c - 描画処理]
+    M --> O[event.c - イベント処理]
+    N --> P[レイキャスティング]
+    O --> Q[move.c - 移動処理]
+```
+
+### 主要ファイル
+
+- **main.c**: プログラムのエントリーポイント
+- **arg*.c**: 引数とマップファイルの検証
+- **get_map*.c**: マップデータの読み込みと解析
+- **get_player.c**: プレイヤーの初期位置・向きの設定
+- **init_*.c**: MLXとテクスチャの初期化
+- **game.c**: メインゲームループ
+- **draw*.c**: レイキャスティングと描画処理
+- **event.c**: キーボードイベントの処理
+- **move*.c**: プレイヤーの移動と回転
+- **include/cub3d.h**: 全体の構造体・関数定義
+
+## 使用可能な関数
+
+- `open`, `close`, `read`, `write`
+- `printf`, `malloc`, `free`
+- `perror`, `strerror`, `exit`
+- `gettimeofday`
+- 数学ライブラリ関数（`-lm`）
+- MinilibX ライブラリ関数
+- 自作 Libft ライブラリ関数
+
+## 作者
+
+- **kmiyazaw** - 主要開発者
+- **kisobe** - 共同開発者
+
+## 開発履歴
+
+プロジェクトの詳細な開発履歴については [DEVLOGS.md](./DEVLOGS.md) をご覧ください。
+
+## ライセンス
+
+このプロジェクトは42学校の課題として作成されました。
