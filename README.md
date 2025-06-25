@@ -123,8 +123,7 @@ graph TD
 
 ## 作者
 
-- **kmiyazaw** - 主要開発者
-- **kisobe** - 共同開発者
+**kmiyazaw** と **kisobe** による共同開発プロジェクト
 
 ## 開発履歴
 
